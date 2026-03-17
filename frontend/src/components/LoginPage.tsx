@@ -165,6 +165,129 @@ function AnimatedLeaf({ leaf }: { leaf: typeof LEAVES[0] }) {
   );
 }
 
+// ─── Marquee Banner — stroke-only + shimmer ────────────────────────────────────
+const MARQUEE_TEXT = 'VERDISORT';
+const BANNER_H = 90;         // px height
+const SVG_FONT_SIZE = 74;    // px — big & bold
+const TEXT_WIDTH = 820;      // approximate pixel width per word + gap
+const COPIES = 6;            // enough to fill widest screens seamlessly
+const TOTAL_W = TEXT_WIDTH * COPIES;
+
+function MarqueeBanner({ direction, speed, flip }: { direction: 'left' | 'right'; speed: number; flip: boolean }) {
+  const anim = direction === 'left' ? 'marqueeL' : 'marqueeR';
+  const borderSide = flip ? 'borderTop' : 'borderBottom';
+
+  return (
+    <div
+      className="absolute left-0 right-0 pointer-events-none select-none overflow-hidden"
+      style={{
+        zIndex: 3,
+        height: `${BANNER_H}px`,
+        top: flip ? 'auto' : 0,
+        bottom: flip ? 0 : 'auto',
+        [borderSide]: '1px solid rgba(34,197,94,0.10)',
+        background: flip
+          ? 'linear-gradient(180deg, rgba(34,197,94,0.04) 0%, transparent 100%)'
+          : 'linear-gradient(180deg, transparent 0%, rgba(34,197,94,0.04) 100%)',
+      }}
+    >
+      {/* Two copies side-by-side so the loop is seamless */}
+      {[0, 1].map(track => (
+        <div
+          key={track}
+          style={{
+            display: 'flex',
+            position: 'absolute',
+            top: 0,
+            left: track === 0 ? 0 : `${TOTAL_W}px`,
+            animation: `${anim} ${speed}s linear infinite`,
+            animationDelay: track === 1 ? `-${speed / 2}s` : '0s',
+            willChange: 'transform',
+          }}
+        >
+          {[...Array(COPIES)].map((_, ci) => (
+            <svg
+              key={ci}
+              width={TEXT_WIDTH}
+              height={BANNER_H}
+              viewBox={`0 0 ${TEXT_WIDTH} ${BANNER_H}`}
+              style={{ flexShrink: 0 }}
+            >
+              <defs>
+                {/* Shimmer gradient — sweeps left-to-right on each copy */}
+                <linearGradient id={`shine-${track}-${ci}`} gradientUnits="userSpaceOnUse"
+                  x1={`${-TEXT_WIDTH}`} y1="0" x2={`0`} y2="0">
+                  <stop offset="40%" stopColor="rgba(34,197,94,0.55)">
+                    <animate attributeName="stop-color"
+                      values="rgba(34,197,94,0.45);rgba(180,255,200,1);rgba(34,197,94,0.45)"
+                      dur={`${speed * 0.55}s`} repeatCount="indefinite"
+                      begin={`${ci * 0.6 + track * 0.3}s`} />
+                  </stop>
+                  <stop offset="50%" stopColor="rgba(200,255,220,0.95)">
+                    <animate attributeName="stop-color"
+                      values="rgba(200,255,220,0.9);rgba(255,255,255,1);rgba(200,255,220,0.9)"
+                      dur={`${speed * 0.55}s`} repeatCount="indefinite"
+                      begin={`${ci * 0.6 + track * 0.3}s`} />
+                  </stop>
+                  <stop offset="60%" stopColor="rgba(34,197,94,0.55)">
+                    <animate attributeName="stop-color"
+                      values="rgba(34,197,94,0.45);rgba(180,255,200,1);rgba(34,197,94,0.45)"
+                      dur={`${speed * 0.55}s`} repeatCount="indefinite"
+                      begin={`${ci * 0.6 + track * 0.3}s`} />
+                  </stop>
+                  <animateTransform attributeName="gradientTransform" type="translate"
+                    values={`${-TEXT_WIDTH},0; ${TEXT_WIDTH * 2},0`}
+                    dur={`${speed * 0.55}s`} repeatCount="indefinite"
+                    begin={`${ci * 0.6 + track * 0.3}s`} />
+                </linearGradient>
+
+                {/* Glow filter */}
+                <filter id={`glow-${track}-${ci}`} x="-10%" y="-50%" width="120%" height="200%">
+                  <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+
+              {/* Base stroke — dim green outline */}
+              <text
+                x="20" y={SVG_FONT_SIZE + 6}
+                fontFamily="'Inter', 'Helvetica Neue', Arial, sans-serif"
+                fontWeight="900"
+                fontSize={SVG_FONT_SIZE}
+                letterSpacing="-1"
+                fill="none"
+                stroke="rgba(34,197,94,0.22)"
+                strokeWidth="1.2"
+              >
+                {MARQUEE_TEXT}
+              </text>
+
+              {/* Shimmer stroke — bright animated gradient */}
+              <text
+                x="20" y={SVG_FONT_SIZE + 6}
+                fontFamily="'Inter', 'Helvetica Neue', Arial, sans-serif"
+                fontWeight="900"
+                fontSize={SVG_FONT_SIZE}
+                letterSpacing="-1"
+                fill="none"
+                stroke={`url(#shine-${track}-${ci})`}
+                strokeWidth="1.2"
+                filter={`url(#glow-${track}-${ci})`}
+              >
+                {MARQUEE_TEXT}
+              </text>
+            </svg>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // ─── Main Login Page ────────────────────────────────────────────────────────────
 export default function LoginPage({ onLogin }: LoginPageProps) {
   const [mode, setMode] = useState<'login' | 'signup'>('login');
