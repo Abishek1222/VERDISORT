@@ -23,6 +23,16 @@
   }
 }
 
+@layer utilities {
+  @keyframes float-leaf {
+    0%, 100% { transform: translateY(-20%) rotate(15deg); }
+    50% { transform: translateY(-35%) rotate(5deg); }
+  }
+  .animate-float-leaf {
+    animation: float-leaf 3s ease-in-out infinite;
+  }
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
