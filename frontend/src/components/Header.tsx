@@ -1,4 +1,4 @@
-import { Leaf, Activity } from 'lucide-react';
+import { Leaf } from 'lucide-react';
 
 export default function Header() {
   return (

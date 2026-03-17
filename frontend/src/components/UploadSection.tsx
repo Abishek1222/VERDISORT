@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { UploadCloud, Image as ImageIcon, X } from 'lucide-react';
 
 interface UploadSectionProps {
