@@ -1,10 +1,25 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-verde-400: #4ade80;
+  --color-verde-500: #22c55e;
+  --color-verde-600: #16a34a;
+  
+  --color-dark-600: #404040;
+  --color-dark-700: #262626;
+  --color-dark-800: #171717;
+  --color-dark-900: #0a0a0a;
+
+  --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
 
 @layer base {
   body {
-    @apply bg-dark-900 text-gray-100 font-sans antialiased selection:bg-verde-500/30 selection:text-verde-400;
+    @apply bg-dark-900 text-gray-100 font-sans antialiased;
+  }
+  
+  ::selection {
+    @apply bg-verde-500/30 text-verde-400;
   }
 }
 
