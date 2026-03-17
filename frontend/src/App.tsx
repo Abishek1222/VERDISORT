@@ -10,6 +10,7 @@ import Dashboard from './components/Dashboard';
 import BinDashboard from './components/BinDashboard';
 import ProfilePanel from './components/ProfilePanel';
 import ScrollReveal from './components/ScrollReveal';
+import ImpactPage from './components/ImpactPage';
 import Footer from './components/Footer';
 
 export interface ClassifyResult {
@@ -77,6 +78,7 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState<'Citizen' | 'Admin'>('Citizen');
   const [profileOpen, setProfileOpen] = useState(false);
+  const [showImpactPage, setShowImpactPage] = useState(false);
   const [activeStep, setActiveStep] = useState<number>(-1);
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<ClassifyResult | null>(null);
@@ -84,6 +86,11 @@ export default function App() {
 
   if (!splashDone) return <SplashScreen onDone={() => setSplashDone(true)} />;
   if (!isLoggedIn) return <LoginPage onLogin={(role) => { setUserRole(role); setIsLoggedIn(true); }} />;
+
+  // ── 4th Page Router ──
+  if (showImpactPage) {
+    return <ImpactPage onBack={() => setShowImpactPage(false)} />;
+  }
 
   const handleImageUpload = async (file: File) => {
     setIsLoading(true);
@@ -141,7 +148,7 @@ export default function App() {
 
       {/* Content */}
       <div className="relative flex flex-col flex-1" style={{ zIndex: 1 }}>
-        <Header onProfileClick={() => setProfileOpen(true)} />
+        <Header onProfileClick={() => setProfileOpen(true)} onLogoClick={() => setShowImpactPage(true)} />
 
         <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           {/* Upload + Result */}
