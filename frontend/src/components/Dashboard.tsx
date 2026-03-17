@@ -86,7 +86,7 @@ export default function Dashboard() {
                   paddingAngle={5}
                   dataKey="value"
                 >
-                  {mockDistributionData.map((entry, index) => (
+                  {mockDistributionData.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
